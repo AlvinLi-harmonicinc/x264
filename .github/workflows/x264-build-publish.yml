@@ -8,6 +8,7 @@ on:
 
 env:
   ARTIFACT: libx264
+  ARTIFACT-RPM: libx264-1.0.0-1.el9.x86_64.rpm
 
 jobs:
   build:
@@ -21,11 +22,13 @@ jobs:
       - name: Install just
         run: curl --proto '=https' --tlsv1.2 -sSf https://just.systems/install.sh | bash -s -- --to /bin
       - name: Build x264
-        run: just deps build package
+        run: just deps build package rpm
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT }}
-          path: ${{ env.ARTIFACT }}.tgz
+          path: |
+            ${{ env.ARTIFACT }}.tgz
+            ${{ env.ARTIFACT-RPM }}
 
   publish:
     name: Publish x264
@@ -41,4 +44,6 @@ jobs:
         name: ${{ env.ARTIFACT }}
     - uses: softprops/action-gh-release@v2
       with:
-        files: ${{ env.ARTIFACT }}.tgz
+        files: |
+          ${{ env.ARTIFACT }}.tgz
+          ${{ env.ARTIFACT-RPM }}
